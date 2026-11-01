@@ -2,7 +2,10 @@
   "name": "wallet-app",
   "private": true,
   "type": "module",
-  "workspaces": ["frontend", "auth-service"],
+  "workspaces": [
+    "frontend",
+    "auth-service"
+  ],
   "scripts": {
     "dev": "bun run --filter '*' dev",
     "build": "bun run --filter wallet-frontend build",
@@ -10,6 +13,6 @@
     "lint": "bun run --filter '*' lint",
     "typecheck": "bun run --filter '*' typecheck",
     "start": "STATIC_DIR=../frontend/dist bun run --filter wallet-auth-service start",
-    "deploy": "bun run build && bunx wrangler deploy"
+    "deploy": "bun run build && bun --env-file=frontend/.env scripts/deploy.ts"
   }
 }

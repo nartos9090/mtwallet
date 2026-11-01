@@ -3,7 +3,7 @@
 // Worker, so the app keeps loading even if the Worker hits its daily limit.
 //
 //   bunx wrangler secret put GOOGLE_CLIENT_ID      (and GOOGLE_CLIENT_SECRET, SESSION_SECRET)
-//   bun run deploy
+//   bun run deploy      (the custom domain comes from VITE_APP_URL in frontend/.env, see scripts/deploy.ts)
 {
   "name": "wallet-app",
   "main": "auth-service/src/worker.ts",

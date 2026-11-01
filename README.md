@@ -31,12 +31,13 @@ bun run build      # builds frontend/dist
 
 ```
 VITE_GOOGLE_CLIENT_ID=<OAuth client ID>.apps.googleusercontent.com
+# Where the app is published; `bun run deploy` deploys to this domain on Cloudflare
+VITE_APP_URL=https://wallet.example.com
 
 # Filled into the Privacy Policy and Terms of Service at build time
 VITE_APP_NAME=Wallet
 VITE_LEGAL_OPERATOR=<person or company running this deployment>
 VITE_LEGAL_CONTACT_EMAIL=
-VITE_LEGAL_WEBSITE=https://wallet.example.com
 VITE_LEGAL_GOVERNING_LAW=the Republic of Indonesia
 ```
 
@@ -85,7 +86,7 @@ against the Worker's daily request limit, so the app keeps loading even if the l
 bunx wrangler secret put GOOGLE_CLIENT_ID
 bunx wrangler secret put GOOGLE_CLIENT_SECRET
 bunx wrangler secret put SESSION_SECRET
-bun run deploy
+bun run deploy          # builds, then deploys to the domain in VITE_APP_URL (its zone must be on Cloudflare)
 ```
 
 **Your own server (Node 23+ or Bun).** One process serves the app and the service:

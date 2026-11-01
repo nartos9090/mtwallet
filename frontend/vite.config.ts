@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
         appName: env.VITE_APP_NAME || 'Wallet',
         operator: env.VITE_LEGAL_OPERATOR,
         contactEmail: env.VITE_LEGAL_CONTACT_EMAIL,
-        website: env.VITE_LEGAL_WEBSITE,
+        website: env.VITE_APP_URL,
         governingLaw: env.VITE_LEGAL_GOVERNING_LAW,
       }),
       VitePWA({
