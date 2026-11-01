@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
+import { SyncBanner } from '@/components/SyncBanner'
 import { TransactionRow } from '@/components/TransactionRow'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -83,6 +84,8 @@ export function Home() {
           <ChevronRight />
         </Button>
       </header>
+
+      <SyncBanner />
 
       <section className="mx-4 mt-2 rounded-xl border p-4">
         <p className="text-sm text-muted-foreground">Total balance</p>

@@ -9,6 +9,7 @@ import { Home } from '@/pages/Home'
 import { Settings } from '@/pages/Settings'
 import { Stats } from '@/pages/Stats'
 import { TransactionForm } from '@/pages/TransactionForm'
+import { startAutoSync } from '@/sync/syncManager'
 import './index.css'
 
 const router = createBrowserRouter([
@@ -30,6 +31,8 @@ const router = createBrowserRouter([
     ],
   },
 ])
+
+startAutoSync()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

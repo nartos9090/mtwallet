@@ -1,5 +1,6 @@
 import { ChartPie, House, Plus, Settings, Wallet } from 'lucide-react'
 import { Link, NavLink, Outlet } from 'react-router'
+import { useSyncStatus } from '@/hooks/useSync'
 import { useSettings } from '@/hooks/useWallet'
 import { cn } from '@/lib/utils'
 import { Onboarding } from '@/pages/Onboarding'
@@ -21,6 +22,8 @@ const TABS = [
 
 /** Main screens, with the bottom navigation and the add button. */
 export function TabsLayout() {
+  const sync = useSyncStatus()
+  const syncNeedsUser = sync.phase === 'needs-auth' || sync.phase === 'error'
   return (
     <>
       <main className="pb-24">
@@ -41,7 +44,12 @@ export function TabsLayout() {
                   )
                 }
               >
-                <tab.icon className="size-5" />
+                <span className="relative">
+                  <tab.icon className="size-5" />
+                  {tab.to === '/settings' && syncNeedsUser && (
+                    <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-destructive" />
+                  )}
+                </span>
                 {tab.label}
               </NavLink>
             ) : (

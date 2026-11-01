@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import { PageHeader } from '@/components/PageHeader'
+import { SyncSettings } from '@/components/SyncSettings'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,7 +52,7 @@ export function Settings() {
         </Section>
 
         <Section title="Google Sheets">
-          <p className="py-3 text-sm text-muted-foreground">Sync with your Google Sheet is coming next.</p>
+          <SyncSettings />
         </Section>
 
         <Section title="Data">
