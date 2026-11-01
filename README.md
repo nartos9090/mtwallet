@@ -1,11 +1,52 @@
-# mtWallet
+<p align="center">
+  <img src="frontend/public/logo.svg" width="96" alt="mtWallet logo">
+</p>
 
-A personal finance app (income, expenses, transfers, statistics) that runs in
-the browser, works offline, and syncs to a Google Sheet in your own Drive.
-It can import Ivy Wallet backups.
+<h1 align="center">mtWallet</h1>
 
-Your data lives in the browser (IndexedDB) and in the sheet. There is no
-database server: the optional auth service only keeps you signed in to Google.
+<p align="center">
+  A small personal finance app, based on Ivy Wallet's features.<br>
+  Runs in the browser and can sync to your own Google Sheet.
+</p>
+
+<p align="center">
+  <a href="https://mtwallet.widyaardianto.com"><strong>Open the app →</strong></a>
+</p>
+
+<p align="center">
+  <a href="https://mtwallet.widyaardianto.com"><img alt="Live app" src="https://img.shields.io/badge/live-mtwallet.widyaardianto.com-FFB25A?style=flat-square"></a>
+  <img alt="Installable PWA" src="https://img.shields.io/badge/PWA-installable-5A0FC8?style=flat-square&logo=pwa&logoColor=white">
+  <img alt="Syncs with Google Sheets" src="https://img.shields.io/badge/sync-Google%20Sheets-34A853?style=flat-square&logo=googlesheets&logoColor=white">
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black">
+  <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?style=flat-square&logo=cloudflare&logoColor=white">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/home.png" width="200" alt="Home: monthly balance and transactions">
+  <img src="docs/screenshots/add-transaction.png" width="200" alt="Adding an expense">
+  <img src="docs/screenshots/statistics.png" width="200" alt="Statistics in dark mode">
+  <img src="docs/screenshots/accounts.png" width="200" alt="Accounts and balances">
+</p>
+<p align="center"><sub>Screenshots use made-up demo data.</sub></p>
+
+## About
+
+I liked Ivy Wallet but it's no longer maintained and keeps data only on the phone, so this is a simple
+web version of the parts I use, with a Google Sheet as the backup.
+
+The app at [mtwallet.widyaardianto.com](https://mtwallet.widyaardianto.com) is the one I use, and you're
+welcome to use it too. Your data stays in your browser and, if you connect one, your own Google Sheet.
+To just look around, open it in a private window.
+
+## Features
+
+- Income, expenses and transfers, with categories, tags and notes
+- Account balances, with balance adjustments like Ivy Wallet
+- A few statistics charts
+- Sync with a Google Sheet, which you can also edit
+- Import from an Ivy Wallet backup
+- Works offline and can be installed on your phone
+- Light and dark theme
 
 ## Repository
 
