@@ -38,6 +38,7 @@ export function Onboarding() {
   return (
     <div className="flex min-h-dvh flex-col justify-center gap-8 p-6">
       <div>
+        <img src="/logo.svg" alt="" className="mb-3 size-14" />
         <h1 className="text-3xl font-semibold">Wallet</h1>
         <p className="mt-2 text-muted-foreground">Track income, expenses and transfers. Synced to your Google Sheet.</p>
       </div>

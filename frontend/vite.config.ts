@@ -23,6 +23,8 @@ export default defineConfig(({ mode }) => {
       }),
       VitePWA({
         registerType: 'autoUpdate',
+        // Icons and favicon links generated from public/logo.svg (pwa-assets.config.ts).
+        pwaAssets: { config: true, overrideManifestIcons: true },
         manifest: {
           name: 'Wallet',
           short_name: 'Wallet',
@@ -30,7 +32,6 @@ export default defineConfig(({ mode }) => {
           theme_color: '#0a0a0a',
           background_color: '#0a0a0a',
           display: 'standalone',
-          icons: [{ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' }],
         },
       }),
     ],
