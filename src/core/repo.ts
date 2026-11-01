@@ -1,3 +1,4 @@
+import { accountBalances } from '@/core/balances'
 import type { WalletDb } from '@/core/db'
 import { newId } from '@/core/id'
 import type { Account, Category, Id, Tag, Transaction } from '@/core/model'
@@ -69,6 +70,30 @@ export async function saveAccount(db: WalletDb, input: AccountInput, id?: Id): P
   }
   await db.accounts.put(account)
   return account.id
+}
+
+/** Title Ivy Wallet gives balance corrections; imported ones keep matching. */
+export const ADJUST_BALANCE_TITLE = 'Adjust balance'
+
+/**
+ * Sets an account's balance the way Ivy Wallet does: records the difference
+ * as an uncategorized income or expense titled "Adjust balance".
+ * Returns the new transaction's id, or undefined when nothing changed.
+ */
+export async function adjustBalance(db: WalletDb, accountId: Id, balance: number, date = Date.now()) {
+  const transactions = await db.transactions.where('accountId').equals(accountId).or('toAccountId').equals(accountId).toArray()
+  const current = accountBalances(transactions).get(accountId) ?? 0
+  // Round to cents: float sums leave noise like 491699.9999999963.
+  const difference = Math.round((balance - current) * 100) / 100
+  if (difference === 0) return undefined
+  return saveTransaction(db, {
+    type: difference > 0 ? 'INCOME' : 'EXPENSE',
+    accountId,
+    amount: Math.abs(difference),
+    title: ADJUST_BALANCE_TITLE,
+    date,
+    tagIds: [],
+  })
 }
 
 /** Accounts with transactions can't be deleted: that would silently change balances. */

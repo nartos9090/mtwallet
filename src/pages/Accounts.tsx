@@ -1,12 +1,12 @@
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
-import { EntityDialog } from '@/components/EntityDialog'
+import { EntityDialog, type EntityValues } from '@/components/EntityDialog'
 import { EntityIcon } from '@/components/EntityIcon'
 import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { db } from '@/core/db'
 import type { Account } from '@/core/model'
-import { deleteAccount, saveAccount } from '@/core/repo'
+import { adjustBalance, deleteAccount, saveAccount } from '@/core/repo'
 import { useAccounts, useBalances, useMoney } from '@/hooks/useWallet'
 import { cn } from '@/lib/utils'
 
@@ -18,6 +18,13 @@ export function Accounts() {
   const [editing, setEditing] = useState<Account | null>()
 
   const total = accounts.reduce((sum, a) => sum + (balances.get(a.id) ?? 0), 0)
+
+  async function onSave({ balance, ...values }: EntityValues) {
+    await db.transaction('rw', [db.accounts, db.transactions], async () => {
+      const id = await saveAccount(db, values, editing?.id)
+      if (balance !== undefined) await adjustBalance(db, id, balance)
+    })
+  }
 
   return (
     <>
@@ -56,8 +63,13 @@ export function Accounts() {
         open={editing !== undefined}
         onOpenChange={(open) => !open && setEditing(undefined)}
         title={editing ? 'Edit account' : 'New account'}
-        initial={editing ?? undefined}
-        onSave={(values) => saveAccount(db, values, editing?.id)}
+        // A new account starts at 0; entering a balance records it as an adjustment, like Ivy.
+        initial={
+          editing
+            ? { name: editing.name, color: editing.color, icon: editing.icon, balance: balances.get(editing.id) ?? 0 }
+            : { name: '', color: '#2196f3', balance: 0 }
+        }
+        onSave={onSave}
         onDelete={editing ? () => deleteAccount(db, editing.id) : undefined}
       />
     </>

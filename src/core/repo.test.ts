@@ -2,7 +2,9 @@ import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { WalletDb } from '@/core/db'
 import { newId } from '@/core/id'
+import { accountBalances } from '@/core/balances'
 import {
+  adjustBalance,
   deleteAccount,
   deleteCategory,
   deleteTransaction,
@@ -66,6 +68,24 @@ describe('repo', () => {
     expect((await db.accounts.get(b))?.orderNum).toBe(1)
     await saveTransaction(db, { ...expense(a), type: 'TRANSFER', toAccountId: b })
     await expect(deleteAccount(db, b)).rejects.toThrow(/1 transactions/)
+  })
+
+  it('adjusts a balance with an income or expense for the difference', async () => {
+    const cash = await saveAccount(db, { name: 'Cash', color: '#000000' })
+    const bank = await saveAccount(db, { name: 'Bank', color: '#000000' })
+    await saveTransaction(db, { ...expense(cash), amount: 0.1 })
+    await saveTransaction(db, { ...expense(bank), type: 'TRANSFER', toAccountId: cash, amount: 0.2 })
+    const balance = async () => accountBalances(await db.transactions.toArray()).get(cash)
+
+    const up = await adjustBalance(db, cash, 50_000)
+    const adjustment = await db.transactions.get(up!)
+    expect(adjustment).toMatchObject({ type: 'INCOME', amount: 49_999.9, title: 'Adjust balance' })
+    expect(adjustment?.categoryId).toBeUndefined()
+    expect(await balance()).toBeCloseTo(50_000)
+
+    const down = await adjustBalance(db, cash, -1_000)
+    expect(await db.transactions.get(down!)).toMatchObject({ type: 'EXPENSE', amount: 51_000 })
+    expect(await adjustBalance(db, cash, -1_000)).toBeUndefined()
   })
 
   it('reuses tags case-insensitively', async () => {
