@@ -1,4 +1,3 @@
-import { useLiveQuery } from 'dexie-react-hooks'
 import { Trash2 } from 'lucide-react'
 import { type ReactNode, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
@@ -36,7 +35,7 @@ import {
   type TransactionInput,
   validateTransaction,
 } from '@/core/repo'
-import { useAccounts, useCategories, useTags, useTransactions } from '@/hooks/useWallet'
+import { useAccounts, useCategories, useLookups, useTags, useTransactions } from '@/hooks/useWallet'
 import { COLORS } from '@/lib/icons'
 
 const TYPES: { value: TransactionType; label: string }[] = [
@@ -50,23 +49,20 @@ export function TransactionForm() {
   const { id } = useParams()
   const [params] = useSearchParams()
   const transactions = useTransactions()
-  // Names are loaded with the transaction so the form never starts from half-loaded lookups.
-  const existing = useLiveQuery(async () => {
-    const transaction = id ? await db.transactions.get(id) : undefined
-    if (!transaction) return null
-    const [category, tags] = await Promise.all([
-      transaction.categoryId ? db.categories.get(transaction.categoryId) : undefined,
-      db.tags.bulkGet(transaction.tagIds),
-    ])
+  const lookups = useLookups()
+  // The store holds live transactions only: a deleted one isn't found.
+  const existing = useMemo(() => {
+    const transaction = id ? transactions?.find((t) => t.id === id) : undefined
+    if (!transaction) return undefined
     return {
       transaction,
-      categoryName: category && !category.deleted ? category.name : '',
-      tagNames: tags.flatMap((t) => (t && !t.deleted ? [t.name] : [])),
+      categoryName: (transaction.categoryId && lookups.categories.get(transaction.categoryId)?.name) || '',
+      tagNames: transaction.tagIds.flatMap((tagId) => lookups.tags.get(tagId)?.name ?? []),
     }
-  }, [id])
+  }, [id, transactions, lookups])
 
-  if (!transactions || existing === undefined) return null
-  if (id && (!existing || existing.transaction.deleted)) {
+  if (!transactions) return null
+  if (id && !existing) {
     return (
       <>
         <PageHeader title="Transaction" back />

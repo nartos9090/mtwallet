@@ -12,6 +12,8 @@ import { TransactionForm } from '@/pages/TransactionForm'
 import { startAutoSync } from '@/sync/syncManager'
 import './index.css'
 
+const loadStats = () => import('@/pages/Stats')
+
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
@@ -22,8 +24,8 @@ const router = createBrowserRouter([
         element: <TabsLayout />,
         children: [
           { index: true, element: <Home /> },
-          // Charts are a big chunk: load them only when Statistics opens.
-          { path: 'stats', lazy: async () => ({ Component: (await import('@/pages/Stats')).Stats }) },
+          // Charts are a big chunk, kept out of the first load (and preloaded below).
+          { path: 'stats', lazy: async () => ({ Component: (await loadStats()).Stats }) },
           { path: 'accounts', element: <Accounts /> },
           { path: 'settings', element: <Settings /> },
         ],
@@ -39,6 +41,12 @@ const router = createBrowserRouter([
 ])
 
 startAutoSync()
+
+// Once the app is up and idle, fetch the Statistics code so the page opens without waiting.
+window.addEventListener('load', () => {
+  const idle = window.requestIdleCallback ?? ((callback: () => void) => setTimeout(callback, 1500))
+  idle(() => void loadStats())
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

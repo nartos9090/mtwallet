@@ -1,61 +1,36 @@
-import { useLiveQuery } from 'dexie-react-hooks'
-import { useCallback, useMemo } from 'react'
-import { accountBalances } from '@/core/balances'
+import { useCallback, useSyncExternalStore } from 'react'
 import { db } from '@/core/db'
 import { formatMoney, formatMoneyCompact } from '@/core/money'
+import { createWalletStore, type Lookups, type WalletSnapshot } from '@/core/walletStore'
+
+/**
+ * The app's data, from one shared in-memory store (core/walletStore.ts) that
+ * loads at startup and stays live. Each hook re-renders only when its own part
+ * changes.
+ */
+export const walletStore = createWalletStore(db)
+
+const EMPTY: never[] = []
+const EMPTY_BALANCES = new Map<string, number>()
+const EMPTY_LOOKUPS: Lookups = { accounts: new Map(), categories: new Map(), tags: new Map() }
+
+function useWallet<T>(select: (snapshot: WalletSnapshot) => T): T | undefined {
+  return useSyncExternalStore(walletStore.subscribe, () => {
+    const snapshot = walletStore.getSnapshot()
+    return snapshot && select(snapshot)
+  })
+}
 
 /** `undefined` while loading, `null` before onboarding. */
-export function useSettings() {
-  return useLiveQuery(async () => (await db.getSettings()) ?? null)
-}
-
-export function useAccounts() {
-  return useLiveQuery(
-    async () => (await db.accounts.filter((a) => !a.deleted).toArray()).sort((a, b) => a.orderNum - b.orderNum),
-    [],
-    [],
-  )
-}
-
-export function useCategories() {
-  return useLiveQuery(
-    async () => (await db.categories.filter((c) => !c.deleted).toArray()).sort((a, b) => a.orderNum - b.orderNum),
-    [],
-    [],
-  )
-}
-
-export function useTags() {
-  return useLiveQuery(() => db.tags.filter((t) => !t.deleted).sortBy('name'), [], [])
-}
-
-/** All live transactions, newest first. A few thousand rows, so filtering happens in memory. */
-export function useTransactions() {
-  return useLiveQuery(
-    async () => (await db.transactions.orderBy('date').reverse().filter((t) => !t.deleted).toArray()),
-    [],
-  )
-}
-
-export function useBalances() {
-  const transactions = useTransactions()
-  return useMemo(() => accountBalances(transactions ?? []), [transactions])
-}
-
+export const useSettings = () => useWallet((s) => s.settings)
+export const useAccounts = () => useWallet((s) => s.accounts) ?? EMPTY
+export const useCategories = () => useWallet((s) => s.categories) ?? EMPTY
+export const useTags = () => useWallet((s) => s.tags) ?? EMPTY
+/** All live transactions, newest first; `undefined` while loading. */
+export const useTransactions = () => useWallet((s) => s.transactions)
+export const useBalances = () => useWallet((s) => s.balances) ?? EMPTY_BALANCES
 /** Lookup maps, so rows can show names and colors. */
-export function useLookups() {
-  const accounts = useAccounts()
-  const categories = useCategories()
-  const tags = useTags()
-  return useMemo(
-    () => ({
-      accounts: new Map(accounts.map((a) => [a.id, a])),
-      categories: new Map(categories.map((c) => [c.id, c])),
-      tags: new Map(tags.map((t) => [t.id, t])),
-    }),
-    [accounts, categories, tags],
-  )
-}
+export const useLookups = () => useWallet((s) => s.lookups) ?? EMPTY_LOOKUPS
 
 export function useMoney() {
   const currency = useSettings()?.currency ?? 'IDR'
