@@ -24,7 +24,11 @@ dist-ssr
 *.sw?
 
 # Real data (Ivy backups) used by local tests
-/private/
+private/
+
+# Local secrets for the auth service (wrangler / node --env-file)
+.dev.vars
+.wrangler/
 
 .env
 .env.*

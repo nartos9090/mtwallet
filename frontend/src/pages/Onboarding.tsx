@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { db } from '@/core/db'
 import { startFresh } from '@/core/repo'
 import { useIvyImport } from '@/hooks/useIvyImport'
-import { loadGoogle } from '@/sync/googleAuth'
+import { prepareSignIn } from '@/sync/googleAuth'
 import { restore } from '@/sync/syncManager'
 
 export function Onboarding() {
@@ -14,8 +14,8 @@ export function Onboarding() {
   const ivyImport = useIvyImport()
   const [restoring, setRestoring] = useState(false)
 
-  // Load Google's script before the tap, so the sign-in popup isn't blocked.
-  useEffect(() => void loadGoogle().catch(() => {}), [])
+  // Get ready before the tap (Google's script, which sign-in mode), so the popup isn't blocked.
+  useEffect(() => void prepareSignIn(), [])
 
   async function onRestore() {
     setRestoring(true)

@@ -11,7 +11,13 @@ export function SyncBanner() {
   return (
     <div className="mx-4 mt-3 flex items-center gap-3 rounded-lg border bg-muted/50 p-3 text-sm">
       <CloudOff className="size-4 shrink-0 text-muted-foreground" />
-      <p className="flex-1">{status.phase === 'needs-auth' ? 'Sign in to sync with Google Sheets' : "Sync didn't work"}</p>
+      <p className="flex-1">
+        {status.phase === 'error'
+          ? "Sync didn't work"
+          : status.notice
+            ? 'Staying signed in is unavailable for now. Sign in to sync now.'
+            : 'Sign in to sync with Google Sheets'}
+      </p>
       <Button size="sm" onClick={() => void syncNow({ interactive: true })}>
         {status.phase === 'needs-auth' ? 'Sign in' : 'Retry'}
       </Button>

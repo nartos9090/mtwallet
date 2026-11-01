@@ -24,6 +24,28 @@ declare namespace google.accounts.oauth2 {
     error_callback?: (error: ClientConfigError) => void
   }): TokenClient
 
+  interface CodeResponse {
+    code: string
+    scope: string
+    error?: string
+    error_description?: string
+  }
+
+  interface CodeClient {
+    requestCode(): void
+  }
+
+  /** Always asks for offline access with consent, so the exchange yields a refresh token. */
+  function initCodeClient(config: {
+    client_id: string
+    scope: string
+    ux_mode: 'popup' | 'redirect'
+    login_hint?: string
+    select_account?: boolean
+    callback: (response: CodeResponse) => void
+    error_callback?: (error: ClientConfigError) => void
+  }): CodeClient
+
   function hasGrantedAllScopes(response: TokenResponse, ...scopes: string[]): boolean
 
   function revoke(accessToken: string, done?: () => void): void

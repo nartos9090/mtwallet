@@ -33,6 +33,9 @@ export default defineConfig({
     strictPort: true,
     // Reached through the dev proxy as <project>.test.
     allowedHosts: ['.test'],
+    // The auth service (auth-service/, `bun run dev` at the repo root starts both).
+    // Keep the browser's Host: the service compares it with the request's Origin.
+    proxy: { '/api': { target: 'http://localhost:8787', changeOrigin: false } },
   },
   test: {
     environment: 'node',

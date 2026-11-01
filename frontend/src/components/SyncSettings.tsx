@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { spreadsheetUrl } from '@/core/sync/googleSheets'
 import { useSyncStatus, useTimeAgo } from '@/hooks/useSync'
 import { cn } from '@/lib/utils'
-import { loadGoogle } from '@/sync/googleAuth'
+import { prepareSignIn } from '@/sync/googleAuth'
 import { connect, disconnect, syncNow } from '@/sync/syncManager'
 
 /** Google Sheets section of Settings. */
@@ -25,8 +25,8 @@ export function SyncSettings() {
   const syncedAgo = useTimeAgo(status.lastSyncedAt)
   const [connecting, setConnecting] = useState(false)
 
-  // Load Google's script before the tap, so the sign-in popup isn't blocked.
-  useEffect(() => void loadGoogle().catch(() => {}), [])
+  // Get ready before the tap (Google's script, which sign-in mode), so the popup isn't blocked.
+  useEffect(() => void prepareSignIn(), [])
 
   async function onConnect() {
     setConnecting(true)
@@ -58,7 +58,7 @@ export function SyncSettings() {
     status.phase === 'syncing'
       ? 'Syncing…'
       : status.phase === 'needs-auth'
-        ? 'Signed out from Google. Sign in to keep syncing.'
+        ? (status.notice ?? 'Signed out from Google. Sign in to keep syncing.')
         : status.phase === 'error'
           ? status.error
           : syncedAgo
