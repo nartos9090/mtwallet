@@ -1,4 +1,4 @@
-import { ExternalLink, RefreshCw } from 'lucide-react'
+import { RefreshCw, Sheet } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -96,14 +96,14 @@ export function SyncSettings() {
         {status.spreadsheetId && (
           <Button variant="outline" asChild>
             <a href={spreadsheetUrl(status.spreadsheetId)} target="_blank" rel="noreferrer">
-              <ExternalLink />
+              <Sheet />
               Open sheet
             </a>
           </Button>
         )}
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="ghost" className="ml-auto">
+            <Button variant="destructive" className="ml-auto">
               Disconnect
             </Button>
           </AlertDialogTrigger>
