@@ -1,4 +1,4 @@
-# Wallet
+# mtWallet
 
 A personal finance app (income, expenses, transfers, statistics) that runs in
 the browser, works offline, and syncs to a Google Sheet in your own Drive.
