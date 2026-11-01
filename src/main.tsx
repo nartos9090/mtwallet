@@ -7,7 +7,6 @@ import { Accounts } from '@/pages/Accounts'
 import { Categories } from '@/pages/Categories'
 import { Home } from '@/pages/Home'
 import { Settings } from '@/pages/Settings'
-import { Stats } from '@/pages/Stats'
 import { TransactionForm } from '@/pages/TransactionForm'
 import { startAutoSync } from '@/sync/syncManager'
 import './index.css'
@@ -15,12 +14,15 @@ import './index.css'
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
+    // Shown while a lazy route (Statistics) loads on a direct visit.
+    HydrateFallback: () => null,
     children: [
       {
         element: <TabsLayout />,
         children: [
           { index: true, element: <Home /> },
-          { path: 'stats', element: <Stats /> },
+          // Charts are a big chunk: load them only when Statistics opens.
+          { path: 'stats', lazy: async () => ({ Component: (await import('@/pages/Stats')).Stats }) },
           { path: 'accounts', element: <Accounts /> },
           { path: 'settings', element: <Settings /> },
         ],

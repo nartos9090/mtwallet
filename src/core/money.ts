@@ -1,11 +1,23 @@
 /** Formats an amount, showing decimals only when it has them (IDR rarely does). */
 export function formatMoney(amount: number, currency: string, locale?: string): string {
+  // Sums of amounts with cents pick up floating-point noise (0.1 + 0.2): round to cents first.
+  amount = Math.round(amount * 100) / 100
   const digits = Number.isInteger(amount) ? 0 : 2
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
+  }).format(amount)
+}
+
+/** Short form for tiles and labels: "IDR 92.5M", "Rp 92,5 jt". */
+export function formatMoneyCompact(amount: number, currency: string, locale?: string): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    notation: 'compact',
+    maximumFractionDigits: 1,
   }).format(amount)
 }
 

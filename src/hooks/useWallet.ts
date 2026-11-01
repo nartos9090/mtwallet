@@ -2,7 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useCallback, useMemo } from 'react'
 import { accountBalances } from '@/core/balances'
 import { db } from '@/core/db'
-import { formatMoney } from '@/core/money'
+import { formatMoney, formatMoneyCompact } from '@/core/money'
 
 /** `undefined` while loading, `null` before onboarding. */
 export function useSettings() {
@@ -60,4 +60,9 @@ export function useLookups() {
 export function useMoney() {
   const currency = useSettings()?.currency ?? 'IDR'
   return useCallback((amount: number) => formatMoney(amount, currency), [currency])
+}
+
+export function useCompactMoney() {
+  const currency = useSettings()?.currency ?? 'IDR'
+  return useCallback((amount: number) => formatMoneyCompact(amount, currency), [currency])
 }

@@ -18,13 +18,17 @@ function readStored(): Theme {
 
 let theme = readStored()
 
+const isDark = () => theme === 'dark' || (theme === 'system' && media.matches)
+
 function apply() {
-  const dark = theme === 'dark' || (theme === 'system' && media.matches)
-  document.documentElement.classList.toggle('dark', dark)
-  document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+  document.documentElement.classList.toggle('dark', isDark())
+  document.documentElement.style.colorScheme = isDark() ? 'dark' : 'light'
 }
 
-media.addEventListener('change', apply)
+media.addEventListener('change', () => {
+  apply()
+  listeners.forEach((listener) => listener())
+})
 
 export function setTheme(next: Theme) {
   theme = next
@@ -44,4 +48,9 @@ function subscribe(listener: () => void) {
 
 export function useTheme() {
   return { theme: useSyncExternalStore(subscribe, () => theme), setTheme }
+}
+
+/** Whether the app currently renders dark, following the system when the theme is Auto. */
+export function useIsDark() {
+  return useSyncExternalStore(subscribe, isDark)
 }

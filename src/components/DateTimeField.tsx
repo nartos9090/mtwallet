@@ -4,21 +4,12 @@ import { Chip } from '@/components/Chip'
 import { Calendar } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { weekStartsOn } from '@/lib/locale'
 
 /** Day and month names follow the phone's language through Intl, so no date-fns locales are bundled. */
 const formatters = {
   formatCaption: (date: Date) => date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
   formatWeekdayName: (date: Date) => date.toLocaleDateString(undefined, { weekday: 'narrow' }),
-}
-
-/** First day of the week for the phone's region (1 = Monday ... 7 = Sunday in Intl, 0 = Sunday in DayPicker). */
-function weekStartsOn(): 0 | 1 | 2 | 3 | 4 | 5 | 6 {
-  const locale = new Intl.Locale(navigator.language) as Intl.Locale & {
-    getWeekInfo?: () => { firstDay: number }
-    weekInfo?: { firstDay: number }
-  }
-  const firstDay = (locale.getWeekInfo?.() ?? locale.weekInfo)?.firstDay ?? 1
-  return (firstDay % 7) as 0 | 1 | 2 | 3 | 4 | 5 | 6
 }
 
 function startOfDay(date: Date) {
