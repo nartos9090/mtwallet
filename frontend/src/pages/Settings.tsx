@@ -79,6 +79,24 @@ export function Settings() {
             </AlertDialogContent>
           </AlertDialog>
         </Section>
+
+        <Section title="About">
+          <Link to="/privacy" className="flex items-center justify-between py-3">
+            Privacy Policy
+            <ChevronRight className="size-4 text-muted-foreground" />
+          </Link>
+          <Link to="/terms" className="flex items-center justify-between py-3">
+            Terms of Service
+            <ChevronRight className="size-4 text-muted-foreground" />
+          </Link>
+          <p className="py-3 text-sm text-muted-foreground">
+            Inspired by{' '}
+            <a className="underline underline-offset-2" href="https://github.com/Ivy-Apps/ivy-wallet" target="_blank" rel="noreferrer">
+              Ivy Wallet
+            </a>
+            , an open-source budget app. Not affiliated with the Ivy Wallet project.
+          </p>
+        </Section>
       </div>
     </>
   )

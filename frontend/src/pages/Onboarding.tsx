@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -81,6 +82,18 @@ export function Onboarding() {
           {restoring ? 'Restoring…' : 'Restore from Google Sheets'}
         </Button>
       </section>
+
+      <p className="text-center text-xs text-muted-foreground">
+        By continuing you agree to the{' '}
+        <Link to="/terms" className="underline underline-offset-2">
+          Terms of Service
+        </Link>{' '}
+        and{' '}
+        <Link to="/privacy" className="underline underline-offset-2">
+          Privacy Policy
+        </Link>
+        .
+      </p>
     </div>
   )
 }

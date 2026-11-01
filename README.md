@@ -31,7 +31,19 @@ bun run build      # builds frontend/dist
 
 ```
 VITE_GOOGLE_CLIENT_ID=<OAuth client ID>.apps.googleusercontent.com
+
+# Filled into the Privacy Policy and Terms of Service at build time
+VITE_APP_NAME=Wallet
+VITE_LEGAL_OPERATOR=<person or company running this deployment>
+VITE_LEGAL_CONTACT_EMAIL=
+VITE_LEGAL_WEBSITE=https://wallet.example.com
+VITE_LEGAL_GOVERNING_LAW=the Republic of Indonesia
 ```
+
+The documents themselves are Markdown in `frontend/src/legal/` (`privacy.md`, `terms.md`),
+served at `/privacy` and `/terms`. `{{placeholders}}` in them take the values above; the build
+warns about empty ones and fails on unknown ones. Update the effective date at the top of a
+document whenever you change it. If you deploy a fork, they must describe *your* deployment.
 
 **Auth service** – `auth-service/.dev.vars` locally (see `auth-service/.dev.vars.example`),
 secrets or environment variables in production:

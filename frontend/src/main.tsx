@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { Accounts } from '@/pages/Accounts'
 import { Categories } from '@/pages/Categories'
 import { Home } from '@/pages/Home'
+import { PrivacyPolicy, TermsOfService } from '@/pages/Legal'
 import { Settings } from '@/pages/Settings'
 import { TransactionForm } from '@/pages/TransactionForm'
 import { startAutoSync } from '@/sync/syncManager'
@@ -32,6 +33,9 @@ const router = createBrowserRouter([
       { path: 'categories', element: <Categories /> },
     ],
   },
+  // Outside RootLayout: readable before onboarding and when opened from a link.
+  { path: 'privacy', element: <PrivacyPolicy /> },
+  { path: 'terms', element: <TermsOfService /> },
 ])
 
 startAutoSync()
