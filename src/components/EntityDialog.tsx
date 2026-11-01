@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { amountToInput, formatAmountInput, parseAmountInput } from '@/core/money'
+import { AmountInput } from '@/components/AmountInput'
+import { parseSignedAmountInput, signedAmountToInput } from '@/core/money'
 import { COLORS, ICONS } from '@/lib/icons'
 import { cn } from '@/lib/utils'
 
@@ -18,13 +19,6 @@ export interface EntityValues {
   balance?: number
 }
 
-/** Amount text with an optional leading minus: balances can be negative. */
-const formatSigned = (text: string) => (text.trim().startsWith('-') ? '-' : '') + formatAmountInput(text)
-const parseSigned = (text: string) => {
-  const amount = parseAmountInput(text.replace('-', ''))
-  if (Number.isNaN(amount)) return 0
-  return text.startsWith('-') ? -amount : amount
-}
 
 /** Create/edit dialog for accounts and categories. */
 export function EntityDialog({
@@ -75,7 +69,7 @@ function EntityForm({
 }) {
   const [values, setValues] = useState<EntityValues>(initial ?? { name: '', color: COLORS[6] })
   const set = (patch: Partial<EntityValues>) => setValues((v) => ({ ...v, ...patch }))
-  const initialBalance = initial?.balance === undefined ? undefined : formatSigned(amountToInput(initial.balance))
+  const initialBalance = initial?.balance === undefined ? undefined : signedAmountToInput(initial.balance)
   const [balanceText, setBalanceText] = useState(initialBalance ?? '')
 
   async function run(action: () => Promise<unknown>) {
@@ -93,7 +87,9 @@ function EntityForm({
       onSubmit={(e) => {
         e.preventDefault()
         // Only a balance the user edited counts: data synced while the dialog was open must not be undone.
-        const balance = initialBalance !== undefined && balanceText !== initialBalance ? parseSigned(balanceText) : undefined
+        const edited = initialBalance !== undefined && balanceText !== initialBalance
+        // An emptied field means a zero balance.
+        const balance = edited ? parseSignedAmountInput(balanceText) || 0 : undefined
         void run(() => onSave({ ...values, balance }))
       }}
     >
@@ -108,24 +104,7 @@ function EntityForm({
       {initialBalance !== undefined && (
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="entity-balance">Balance</Label>
-          <div className="flex gap-2">
-            <Input
-              id="entity-balance"
-              inputMode="decimal"
-              className="tabular-nums"
-              value={balanceText}
-              onChange={(e) => setBalanceText(formatSigned(e.target.value))}
-            />
-            {/* Number keypads often have no minus key. */}
-            <Button
-              type="button"
-              variant="outline"
-              aria-label="Switch between positive and negative"
-              onClick={() => setBalanceText((t) => (t.startsWith('-') ? t.slice(1) : `-${t}`))}
-            >
-              ±
-            </Button>
-          </div>
+          <AmountInput id="entity-balance" label="Balance" value={balanceText} onChange={setBalanceText} signed size="md" />
           <p className="text-xs text-muted-foreground">
             A change is recorded as an “Adjust balance” income or expense for the difference.
           </p>

@@ -50,6 +50,23 @@ export function amountToInput(amount: number, locale?: string): string {
   return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(amount)
 }
 
+/** formatAmountInput keeping a leading minus (balances can be negative). Accepts "-" and "−". */
+export function formatSignedAmountInput(text: string, locale?: string): string {
+  const negative = /^\s*[-−]/.test(text)
+  return (negative ? '-' : '') + formatAmountInput(text.replace(/[-−]/g, ''), locale)
+}
+
+/** amountToInput with the sign written as "-" (some locales format negatives with "−"). */
+export function signedAmountToInput(amount: number, locale?: string): string {
+  return (amount < 0 ? '-' : '') + amountToInput(Math.abs(amount), locale)
+}
+
+/** Parses the output of formatSignedAmountInput. Returns NaN for empty input. */
+export function parseSignedAmountInput(text: string, locale?: string): number {
+  const amount = parseAmountInput(text.replace('-', ''), locale)
+  return text.startsWith('-') ? -amount : amount
+}
+
 /** Parses the output of formatAmountInput. Returns NaN for empty input. */
 export function parseAmountInput(text: string, locale?: string): number {
   const { group, decimal } = separators(locale)

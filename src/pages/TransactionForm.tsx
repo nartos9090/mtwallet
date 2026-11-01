@@ -3,6 +3,7 @@ import { Trash2 } from 'lucide-react'
 import { type ReactNode, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
+import { AmountInput } from '@/components/AmountInput'
 import { CategoryField } from '@/components/CategoryField'
 import { Chip } from '@/components/Chip'
 import { DateTimeField } from '@/components/DateTimeField'
@@ -26,7 +27,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { db } from '@/core/db'
 import type { Id, Transaction, TransactionType } from '@/core/model'
-import { amountToInput, formatAmountInput, parseAmountInput } from '@/core/money'
+import { amountToInput, parseAmountInput } from '@/core/money'
 import {
   deleteTransaction,
   ensureCategory,
@@ -35,7 +36,7 @@ import {
   type TransactionInput,
   validateTransaction,
 } from '@/core/repo'
-import { useAccounts, useCategories, useSettings, useTags, useTransactions } from '@/hooks/useWallet'
+import { useAccounts, useCategories, useTags, useTransactions } from '@/hooks/useWallet'
 import { COLORS } from '@/lib/icons'
 
 const TYPES: { value: TransactionType; label: string }[] = [
@@ -110,7 +111,6 @@ function TransactionEditor({
 }) {
   const navigate = useNavigate()
   const location = useLocation()
-  const currency = useSettings()?.currency
   const accounts = useAccounts()
   const categories = useCategories()
   const tags = useTags()
@@ -267,18 +267,7 @@ function TransactionEditor({
           ))}
         </ToggleGroup>
 
-        <div className="flex items-baseline gap-2 border-b pb-2">
-          <span className="text-muted-foreground">{currency}</span>
-          <input
-            aria-label="Amount"
-            inputMode="decimal"
-            placeholder="0"
-            autoFocus={!id}
-            className="w-full bg-transparent text-4xl font-semibold tabular-nums outline-none"
-            value={amount}
-            onChange={(e) => setAmount(formatAmountInput(e.target.value))}
-          />
-        </div>
+        <AmountInput value={amount} onChange={setAmount} autoFocus={!id} />
 
         <Field label={type === 'TRANSFER' ? 'From' : 'Account'}>{accountChips(accountId, setAccountId)}</Field>
         {type === 'TRANSFER' && <Field label="To">{accountChips(toAccountId, setToAccountId, accountId)}</Field>}

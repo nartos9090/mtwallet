@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { formatAmountInput, formatMoney, parseAmountInput } from '@/core/money'
+import {
+  formatAmountInput,
+  formatMoney,
+  formatSignedAmountInput,
+  parseAmountInput,
+  parseSignedAmountInput,
+  signedAmountToInput,
+} from '@/core/money'
 import { newId } from '@/core/id'
 
 describe('amount input', () => {
@@ -16,6 +23,22 @@ describe('amount input', () => {
     expect(parseAmountInput('1.500,25', 'id-ID')).toBe(1500.25)
     expect(parseAmountInput('1,500.25', 'en-US')).toBe(1500.25)
     expect(parseAmountInput('', 'id-ID')).toBeNaN()
+  })
+})
+
+describe('signed amount input', () => {
+  it('keeps a leading minus, in either form', () => {
+    expect(formatSignedAmountInput('-1234567', 'id-ID')).toBe('-1.234.567')
+    expect(formatSignedAmountInput('−25000', 'en-US')).toBe('-25,000')
+    expect(formatSignedAmountInput('12-3', 'en-US')).toBe('123')
+    expect(formatSignedAmountInput('-', 'en-US')).toBe('-')
+  })
+
+  it('round-trips negative balances', () => {
+    expect(signedAmountToInput(-25000.5, 'id-ID')).toBe('-25.000,5')
+    expect(parseSignedAmountInput('-25.000,5', 'id-ID')).toBe(-25000.5)
+    expect(parseSignedAmountInput('1,500', 'en-US')).toBe(1500)
+    expect(parseSignedAmountInput('-', 'en-US')).toBeNaN()
   })
 })
 
